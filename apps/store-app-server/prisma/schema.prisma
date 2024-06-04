@@ -1,0 +1,71 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Box {
+  content      String?
+  createdAt    DateTime      @default(now())
+  description  String?
+  id           String        @id @default(cuid())
+  isRevealed   Boolean?
+  name         String?
+  orders       Order[]
+  price        Float?
+  transactions Transaction[]
+  updatedAt    DateTime      @updatedAt
+}
+
+model Transaction {
+  amount          Float?
+  box             Box?                            @relation(fields: [boxId], references: [id])
+  boxId           String?
+  createdAt       DateTime                        @default(now())
+  date            DateTime?
+  id              String                          @id @default(cuid())
+  transactionType EnumTransactionTransactionType?
+  updatedAt       DateTime                        @updatedAt
+  user            User?                           @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model Order {
+  address        String?
+  box            Box?                     @relation(fields: [boxId], references: [id])
+  boxId          String?
+  createdAt      DateTime                 @default(now())
+  deliveryStatus EnumOrderDeliveryStatus?
+  id             String                   @id @default(cuid())
+  orderDate      DateTime?
+  updatedAt      DateTime                 @updatedAt
+  user           User?                    @relation(fields: [userId], references: [id])
+  userId         String?
+}
+
+model User {
+  accountBalance Float?
+  address        String?
+  createdAt      DateTime      @default(now())
+  email          String?       @unique
+  firstName      String?
+  id             String        @id @default(cuid())
+  lastName       String?
+  orders         Order[]
+  password       String
+  roles          Json
+  transactions   Transaction[]
+  updatedAt      DateTime      @updatedAt
+  username       String        @unique
+}
+
+enum EnumTransactionTransactionType {
+  Option1
+}
+
+enum EnumOrderDeliveryStatus {
+  Option1
+}
